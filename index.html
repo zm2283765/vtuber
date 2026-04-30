@@ -1,216 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <title>VTuber 聊天</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>名真 Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #fff;
-    }
+<link rel="icon" href="./avatar.png" />
 
-    .container {
-      display: flex;
-      height: 100vh;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    /* 左側輪播 */
-    .left {
-      width: 50%;
-      background: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #e0e7ff, #fce7f3);
+  height: 100vh;
+  overflow: hidden;
+}
 
-    .left img {
-      width: 90%;
-      border-radius: 20px;
-    }
+.main {
+  display: flex;
+  height: 100vh;
+}
 
-    /* 右側聊天 */
-    .right {
-      width: 50%;
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-    }
+/* 🔥 左側（桌機優化：往上） */
+.left-panel {
+  width: 45%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* 👈 原本 center 改這裡 */
+  padding-top: 60px;       /* 👈 增加上方空間 */
+}
 
-    #chatBox {
-      flex: 1;
-      overflow-y: auto;
-      margin-bottom: 10px;
-    }
+.vtuber {
+  height: 70%;
+}
 
-    .msg {
-      margin: 5px 0;
-    }
+/* 右側 */
+.right-panel {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+}
 
-    .user {
-      text-align: right;
-      color: #4fc3f7;
-    }
+.chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  padding-bottom: 120px;
+}
 
-    .bot {
-      text-align: left;
-      color: #fff;
-    }
+/* 聊天 */
+.chat-row {
+  display: flex;
+  margin-bottom: 14px;
+  gap: 10px;
+}
 
-    input, button {
-      padding: 10px;
-      border-radius: 10px;
-      border: none;
-      margin: 5px 0;
-    }
+.chat-row.user {
+  justify-content: flex-end;
+}
 
-    input {
-      width: 100%;
-    }
+.chat-row.bot {
+  justify-content: flex-start;
+}
 
-    button {
-      background: #4fc3f7;
-      color: #000;
-      cursor: pointer;
-    }
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
 
-    /* 手機版 */
-    @media (max-width: 768px) {
-      .container {
-        flex-direction: column;
-      }
+.bubble {
+  max-width: 65%;
+  padding: 12px 16px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.6;
+}
 
-      .left {
-        width: 100%;
-        padding: 20px 0;
-      }
+.user .bubble {
+  background: linear-gradient(135deg, #4f7cff, #6c8cff);
+  color: white;
+}
 
-      .left img {
-        width: 80%;
-      }
+.bot .bubble {
+  background: white;
+  color: #333;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+}
 
-      .right {
-        width: 100%;
-        padding: 15px;
-      }
+/* 🔥 輸入框 */
+.input-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 15px 24px; /* 👈 左右留白 */
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
+  z-index: 999;
+}
 
-      button {
-        margin-right: 10px;
-      }
-    }
+input {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  outline: none;
+}
 
-  </style>
+button {
+  margin-left: 12px;
+  padding: 14px 22px;
+  border: none;
+  background: linear-gradient(135deg, #4f7cff, #6c8cff);
+  color: white;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+/* 🔥 手機版優化 */
+@media (max-width: 768px) {
+
+  .left-panel {
+    width: 25%;
+    align-items: center;
+    padding-left: 30px;  /* 👈 左邊留空間 */
+    padding-bottom: 30px;
+  }
+
+  .right-panel {
+    width: 75%;
+  }
+
+  .vtuber {
+    max-height: 60%;
+    margin-top: 10px; /* 👈 不貼底 */
+  }
+
+  .chat-area {
+    padding-bottom: 140px;
+  }
+
+  .bubble {
+    max-width: 85%;
+    font-size: 14px;
+  }
+
+  /* 👇 送出按鈕不要貼邊 */
+  .input-bar {
+    padding: 12px 16px;
+  }
+
+  button {
+    padding: 12px 20px;
+  }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="container">
+<div class="main">
 
-  <!-- 左側輪播 -->
-  <div class="left">
-    <img id="slide" src="https://picsum.photos/500/700?random=1">
+  <div class="left-panel">
+    <img id="vtuber" class="vtuber" src="./pic1a.png">
   </div>
 
-  <!-- 右側聊天 -->
-  <div class="right">
-
-    <!-- Step 1 換名字 -->
-    <button onclick="changeName()">換名字</button>
-
-    <!-- Step 2 輸入名字 -->
-    <input id="nameInput" placeholder="請輸入你的名字">
-
-    <!-- Step 3 進入聊天 -->
-    <button onclick="startChat()">開始聊天</button>
-
-    <!-- 聊天區 -->
-    <div id="chatBox"></div>
-
-    <!-- Step 4 傳送訊息 -->
-    <input id="msgInput" placeholder="輸入訊息">
-    <button onclick="sendMsg()">送出</button>
-
+  <div class="right-panel">
+    <div class="chat-area" id="chat"></div>
   </div>
+
+</div>
+
+<div class="input-bar">
+  <input id="input" type="text" placeholder="跟名真說點什麼…" />
+  <button onclick="sendMessage()">送出</button>
 </div>
 
 <script>
 
-let userName = "";
-let started = false;
-
 /* 輪播 */
-let images = [
-  "https://picsum.photos/500/700?random=1",
-  "https://picsum.photos/500/700?random=2",
-  "https://picsum.photos/500/700?random=3"
+const images = [
+  "./pic1a.png",
+  "./pic2a.png",
+  "./pic3a.png",
+  "./pic4a.png"
 ];
 
 let index = 0;
-
 setInterval(() => {
   index = (index + 1) % images.length;
-  document.getElementById("slide").src = images[index];
-}, 3000);
+  document.getElementById("vtuber").src = images[index];
+}, 1000);
 
 
-/* 換名字 */
-function changeName() {
-  userName = "";
-  document.getElementById("chatBox").innerHTML = "";
-  alert("已清除名字，請重新輸入");
-}
+/* 聊天 */
+function addMessage(text, type) {
+  const chat = document.getElementById("chat");
 
-/* 開始聊天 */
-function startChat() {
-  const name = document.getElementById("nameInput").value.trim();
+  const row = document.createElement("div");
+  row.className = "chat-row " + type;
 
-  if (!name) {
-    alert("請輸入名字");
-    return;
+  const avatar = document.createElement("img");
+  avatar.className = "avatar";
+  avatar.src = type === "user" ? "./user-avatar.png" : "./avatar.png";
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerText = text;
+
+  if (type === "user") {
+    row.appendChild(bubble);
+    row.appendChild(avatar);
+  } else {
+    row.appendChild(avatar);
+    row.appendChild(bubble);
   }
 
-  userName = name;
-  started = true;
-
-  addMsg("bot", `你好 ${userName} 👋 我是你的 VTuber`);
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
 }
 
-/* 傳送訊息 */
-function sendMsg() {
-  if (!started) {
-    alert("請先輸入名字並開始聊天");
-    return;
-  }
 
-  const input = document.getElementById("msgInput");
+/* webhook */
+async function sendMessage() {
+  const input = document.getElementById("input");
   const text = input.value.trim();
-
   if (!text) return;
 
-  addMsg("user", text);
-
-  // 模擬回覆
-  setTimeout(() => {
-    addMsg("bot", `${userName}，你說的是：「${text}」`);
-  }, 500);
-
+  addMessage(text, "user");
   input.value = "";
+
+  try {
+    const res = await fetch("https://zm2283765.app.n8n.cloud/webhook/vtuber", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        message: text
+      })
+    });
+
+    const data = await res.json();
+    addMessage(data.reply || "（沒有回應）", "bot");
+
+  } catch (err) {
+    addMessage("⚠️ 連線失敗", "bot");
+  }
 }
 
-/* 顯示訊息 */
-function addMsg(role, text) {
-  const box = document.getElementById("chatBox");
-
-  const div = document.createElement("div");
-  div.className = "msg " + role;
-  div.innerText = text;
-
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-}
+document.getElementById("input").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") sendMessage();
+});
 
 </script>
 
