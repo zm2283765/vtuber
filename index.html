@@ -38,14 +38,6 @@ body {
   flex-direction: column;
 }
 
-/* 🔥 名字顯示 */
-.user-bar {
-  padding: 12px 20px;
-  font-size: 14px;
-  background: rgba(255,255,255,0.6);
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-}
-
 .chat-area {
   flex: 1;
   overflow-y: auto;
@@ -83,7 +75,7 @@ body {
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
-/* 🔥 輸入區 */
+/* 🔥 底部區塊 */
 .input-wrapper {
   position: fixed;
   bottom: 0;
@@ -91,18 +83,31 @@ body {
   right: 0;
 }
 
-/* 換名字按鈕（Step3） */
-.name-bar {
-  padding: 10px 20px;
+/* ✅ 名字＋按鈕（左上角小區塊） */
+.user-box {
+  position: absolute;
+  left: 20px;
+  bottom: 80px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   background: rgba(255,255,255,0.9);
-  text-align: right;
+  padding: 8px 12px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  width: fit-content;
 }
 
-.name-bar button {
-  padding: 8px 14px;
-  font-size: 13px;
+.user-name {
+  font-size: 14px;
 }
 
+.user-box button {
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+/* 輸入區 */
 .input-bar {
   display: flex;
   padding: 15px 24px;
@@ -128,10 +133,31 @@ button {
 
 /* 手機 */
 @media (max-width: 768px) {
-  .left-panel { width: 25%; padding-left: 30px; }
-  .right-panel { width: 75%; }
-  .bubble { max-width: 85%; font-size: 14px; }
-  .input-bar { padding: 12px 16px; }
+
+  .left-panel {
+    width: 25%;
+    padding-left: 20px;
+  }
+
+  .right-panel {
+    width: 75%;
+  }
+
+  .bubble {
+    max-width: 85%;
+    font-size: 14px;
+  }
+
+  .input-bar {
+    padding: 12px 16px;
+  }
+
+  /* 手機時也保持左上 */
+  .user-box {
+    left: 10px;
+    bottom: 85px;
+  }
+
 }
 
 </style>
@@ -146,20 +172,17 @@ button {
   </div>
 
   <div class="right-panel">
-
-    <!-- Step2 顯示名字 -->
-    <div class="user-bar" id="userBar">👤 訪客</div>
-
     <div class="chat-area" id="chat"></div>
   </div>
 
 </div>
 
-<!-- 🔥 Step3 + 輸入 -->
+<!-- 🔥 底部 -->
 <div class="input-wrapper">
 
-  <!-- 換名字（在輸入框上面） -->
-  <div class="name-bar">
+  <!-- ✅ 使用者名稱＋換名字（同一區塊） -->
+  <div class="user-box">
+    <div class="user-name" id="userName">👤 訪客</div>
     <button onclick="changeName()">換名字</button>
   </div>
 
@@ -173,7 +196,7 @@ button {
 <script>
 
 /* =========================
-   Step1：建立 user_id
+   Step1：user_id
 ========================= */
 
 let userId = localStorage.getItem("user_id");
@@ -189,22 +212,23 @@ if (!userName) {
   localStorage.setItem("user_name", userName);
 }
 
-updateUserBar();
+updateUserUI();
 
-function updateUserBar() {
-  document.getElementById("userBar").innerText = "👤 " + userName;
+function updateUserUI() {
+  document.getElementById("userName").innerText = "👤 " + userName;
 }
 
 /* =========================
    Step3：換名字
 ========================= */
+
 function changeName() {
   const newName = prompt("請輸入新名字：");
   if (!newName) return;
 
   userName = newName;
   localStorage.setItem("user_name", userName);
-  updateUserBar();
+  updateUserUI();
 }
 
 /* 輪播 */
