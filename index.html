@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8" />
@@ -8,7 +8,9 @@
 <link rel="icon" href="./avatar.png" />
 
 <style>
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -18,18 +20,23 @@ body {
   overflow: hidden;
 }
 
-.main { display: flex; height: 100vh; }
+.main {
+  display: flex;
+  height: 100vh;
+}
 
-/* 左側 */
+/* 🔥 左側（桌機優化：往上） */
 .left-panel {
   width: 45%;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
-  padding-top: 60px;
+  align-items: flex-start; /* 👈 原本 center 改這裡 */
+  padding-top: 60px;       /* 👈 增加上方空間 */
 }
 
-.vtuber { height: 70%; }
+.vtuber {
+  height: 70%;
+}
 
 /* 右側 */
 .right-panel {
@@ -42,13 +49,23 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 20px;
-  padding-bottom: 160px;
+  padding-bottom: 120px;
 }
 
 /* 聊天 */
-.chat-row { display: flex; margin-bottom: 14px; gap: 10px; }
-.chat-row.user { justify-content: flex-end; }
-.chat-row.bot { justify-content: flex-start; }
+.chat-row {
+  display: flex;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+.chat-row.user {
+  justify-content: flex-end;
+}
+
+.chat-row.bot {
+  justify-content: flex-start;
+}
 
 .avatar {
   width: 36px;
@@ -75,43 +92,18 @@ body {
   box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 
-/* 🔥 底部區塊 */
-.input-wrapper {
+/* 🔥 輸入框 */
+.input-bar {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-}
-
-/* ✅ 名字＋按鈕（左上角小區塊） */
-.user-box {
-  position: absolute;
-  left: 20px;
-  bottom: 80px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(255,255,255,0.9);
-  padding: 8px 12px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-  width: fit-content;
-}
-
-.user-name {
-  font-size: 14px;
-}
-
-.user-box button {
-  padding: 6px 10px;
-  font-size: 12px;
-}
-
-/* 輸入區 */
-.input-bar {
-  display: flex;
-  padding: 15px 24px;
+  padding: 15px 24px; /* 👈 左右留白 */
   background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
+  z-index: 999;
 }
 
 input {
@@ -119,6 +111,8 @@ input {
   padding: 14px;
   border-radius: 12px;
   border: 1px solid #ddd;
+  font-size: 16px;
+  outline: none;
 }
 
 button {
@@ -131,17 +125,27 @@ button {
   cursor: pointer;
 }
 
-/* 手機 */
+/* 🔥 手機版優化 */
 @media (max-width: 768px) {
 
   .left-panel {
     width: 25%;
-    padding-left: 60px;
-    padding-bottom:40px;
+    align-items: center;
+    padding-left: 30px;  /* 👈 左邊留空間 */
+    padding-bottom: 30px;
   }
 
   .right-panel {
     width: 75%;
+  }
+
+  .vtuber {
+    max-height: 60%;
+    margin-top: 10px; /* 👈 不貼底 */
+  }
+
+  .chat-area {
+    padding-bottom: 140px;
   }
 
   .bubble {
@@ -149,14 +153,13 @@ button {
     font-size: 14px;
   }
 
+  /* 👇 送出按鈕不要貼邊 */
   .input-bar {
     padding: 12px 16px;
   }
 
-  /* 手機時也保持左上 */
-  .user-box {
-    left: 10px;
-    bottom: 85px;
+  button {
+    padding: 12px 20px;
   }
 
 }
@@ -178,59 +181,12 @@ button {
 
 </div>
 
-<!-- 🔥 底部 -->
-<div class="input-wrapper">
-
-  <!-- ✅ 使用者名稱＋換名字（同一區塊） -->
-  <div class="user-box">
-    <div class="user-name" id="userName">👤 訪客</div>
-    <button onclick="changeName()">換名字</button>
-  </div>
-
-  <div class="input-bar">
-    <input id="input" type="text" placeholder="跟名真說點什麼…" />
-    <button onclick="sendMessage()">送出</button>
-  </div>
-
+<div class="input-bar">
+  <input id="input" type="text" placeholder="跟名真說點什麼…" />
+  <button onclick="sendMessage()">送出</button>
 </div>
 
 <script>
-
-/* =========================
-   Step1：user_id
-========================= */
-
-let userId = localStorage.getItem("user_id");
-let userName = localStorage.getItem("user_name");
-
-if (!userId) {
-  userId = "user_" + Date.now();
-  localStorage.setItem("user_id", userId);
-}
-
-if (!userName) {
-  userName = prompt("請輸入你的名字：") || "訪客";
-  localStorage.setItem("user_name", userName);
-}
-
-updateUserUI();
-
-function updateUserUI() {
-  document.getElementById("userName").innerText = "👤 " + userName;
-}
-
-/* =========================
-   Step3：換名字
-========================= */
-
-function changeName() {
-  const newName = prompt("請輸入新名字：");
-  if (!newName) return;
-
-  userName = newName;
-  localStorage.setItem("user_name", userName);
-  updateUserUI();
-}
 
 /* 輪播 */
 const images = [
@@ -245,6 +201,7 @@ setInterval(() => {
   index = (index + 1) % images.length;
   document.getElementById("vtuber").src = images[index];
 }, 1000);
+
 
 /* 聊天 */
 function addMessage(text, type) {
@@ -273,10 +230,8 @@ function addMessage(text, type) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-/* =========================
-   Step4：送出帶 user_id
-========================= */
 
+/* webhook */
 async function sendMessage() {
   const input = document.getElementById("input");
   const text = input.value.trim();
@@ -288,11 +243,11 @@ async function sendMessage() {
   try {
     const res = await fetch("https://zm2283765.app.n8n.cloud/webhook/vtuber", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
-        message: text,
-        user_id: userId,
-        user_name: userName
+        message: text
       })
     });
 
