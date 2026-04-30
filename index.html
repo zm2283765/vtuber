@@ -153,25 +153,21 @@ button {
     font-size: 14px;
   }
 
-  /* 👇 送出按鈕不要貼邊 */
   .input-bar {
-  position: fixed;
-  bottom: 10px;              /* 👈 離底部一點 */
-  left: 10px;                /* 👈 左右都縮進 */
-  right: 10px;
+    padding: 12px 16px 20px; /* 👈 底部多一點 */
+    border-radius: 16px 16px 0 0; /* 👈 上圓角 */
+    
+    /* 👇 避開手機底部安全區（超重要） */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
 
-  display: flex;
-  padding: 12px;
-  
-  background: rgba(255,255,255,0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
-  border-radius: 16px;       /* 👈 加圓角（質感↑） */
-}
+  input {
+    margin-right: 8px; /* 👈 關鍵間距 */
+  }
 
   button {
-    padding: 12px 20px;
-    margin-right:16px;
+    margin-right: 4px; /* 👈 微距離即可 */
+    padding: 12px 18px;
   }
 
 }
