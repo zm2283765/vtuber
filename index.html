@@ -25,13 +25,13 @@ body {
   height: 100vh;
 }
 
-/* 🔥 左側（桌機優化：往上） */
+/* 🔥 左側 */
 .left-panel {
   width: 45%;
   display: flex;
   justify-content: center;
-  align-items: flex-start; /* 👈 原本 center 改這裡 */
-  padding-top: 60px;       /* 👈 增加上方空間 */
+  align-items: flex-start;
+  padding-top: 60px;
 }
 
 .vtuber {
@@ -99,7 +99,7 @@ body {
   left: 0;
   right: 0;
   display: flex;
-  padding: 15px 24px; /* 👈 左右留白 */
+  padding: 15px 24px;
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
@@ -125,43 +125,24 @@ button {
   cursor: pointer;
 }
 
-/* 🔥 手機版優化 */
-@media (max-width: 768px) {
+/* 👤 使用者資訊 */
+.user-bar {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.9);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
 
-  .left-panel {
-    width: 25%;
-    align-items: center;
-    padding-left: 30px;  /* 👈 左邊留空間 */
-    padding-bottom: 30px;
-  }
-
-  .right-panel {
-    width: 75%;
-  }
-
-  .vtuber {
-    max-height: 60%;
-    margin-top: 10px; /* 👈 不貼底 */
-  }
-
-  .chat-area {
-    padding-bottom: 140px;
-  }
-
-  .bubble {
-    max-width: 85%;
-    font-size: 14px;
-  }
-
-  /* 👇 送出按鈕不要貼邊 */
-  .input-bar {
-    padding: 12px 16px;
-  }
-
-  button {
-    padding: 12px 20px;
-  }
-
+.user-bar button {
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 </style>
@@ -169,8 +150,13 @@ button {
 
 <body>
 
-<div class="main">
+<!-- 👤 使用者顯示 -->
+<div class="user-bar">
+  <span id="username"></span>
+  <button onclick="changeName()">換名字</button>
+</div>
 
+<div class="main">
   <div class="left-panel">
     <img id="vtuber" class="vtuber" src="./pic1a.png">
   </div>
@@ -178,7 +164,6 @@ button {
   <div class="right-panel">
     <div class="chat-area" id="chat"></div>
   </div>
-
 </div>
 
 <div class="input-bar">
@@ -187,21 +172,51 @@ button {
 </div>
 
 <script>
-  /* 1️⃣ 取得或建立 user_id*/
-let userId = localStorage.getItem("user_id");
 
-if (!userId) {
-  userId = prompt("請輸入你的名字或暱稱");
-  
-  /*防呆（避免空值）*/
-  if (!userId || userId.trim() === "") {
-    userId = "guest_" + Math.random().toString(36).substring(2, 8);
+/* ✅ Step1：取得或建立 user_id */
+function getUserId() {
+  let userId = localStorage.getItem("user_id");
+
+  if (!userId) {
+    userId = prompt("請輸入你的名字或暱稱");
+
+    if (!userId || userId.trim() === "") {
+      userId = "guest_" + Math.random().toString(36).substring(2, 8);
+    }
+
+    localStorage.setItem("user_id", userId);
   }
 
-  localStorage.setItem("user_id", userId);
+  return userId;
 }
 
-console.log("目前使用者：", userId);
+/* ✅ Step2：顯示名字 */
+function showUserName() {
+  const userId = getUserId();
+  document.getElementById("username").innerText = "👤 " + userId;
+}
+
+showUserName();
+
+/* ✅ Step3：換名字 */
+function changeName() {
+  const newName = prompt("請輸入新的名字");
+
+  if (!newName || newName.trim() === "") {
+    alert("名字不能是空的喔！");
+    return;
+  }
+
+  if (!confirm("確定要換名字嗎？記憶會分開喔")) return;
+
+  localStorage.setItem("user_id", newName.trim());
+
+  showUserName();
+
+  document.getElementById("chat").innerHTML = "";
+
+  alert("已更換為：" + newName);
+}
 
 /* 輪播 */
 const images = [
@@ -216,7 +231,6 @@ setInterval(() => {
   index = (index + 1) % images.length;
   document.getElementById("vtuber").src = images[index];
 }, 1000);
-
 
 /* 聊天 */
 function addMessage(text, type) {
@@ -245,12 +259,13 @@ function addMessage(text, type) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-
-/* webhook */
+/* ✅ Step4：每次送出抓最新 user_id */
 async function sendMessage() {
   const input = document.getElementById("input");
   const text = input.value.trim();
   if (!text) return;
+
+  const userId = getUserId(); // 🔥 重點
 
   addMessage(text, "user");
   input.value = "";
