@@ -187,6 +187,10 @@ button {
 </div>
 
 <script>
+ /* 🔐 主人固定身份（關鍵） */
+const OWNER_ID = "owner_001";
+const OWNER_NAME = "王祥斌";
+ 
 
 /* 輪播 */
 const images = [
@@ -247,7 +251,10 @@ async function sendMessage() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        message: text
+        message: text,
+        user_id: OWNER_ID,      // 🔥 核心
+        user_name: OWNER_NAME   // 🔥 給AI用
+
       })
     });
 
