@@ -155,8 +155,19 @@ button {
 
   /* 👇 送出按鈕不要貼邊 */
   .input-bar {
-    padding: 12px 16px;
-  }
+  position: fixed;
+  bottom: 10px;              /* 👈 離底部一點 */
+  left: 10px;                /* 👈 左右都縮進 */
+  right: 10px;
+
+  display: flex;
+  padding: 12px;
+  
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -5px 15px rgba(0,0,0,0.08);
+  border-radius: 16px;       /* 👈 加圓角（質感↑） */
+}
 
   button {
     padding: 12px 20px;
