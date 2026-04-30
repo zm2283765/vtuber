@@ -187,6 +187,21 @@ button {
 </div>
 
 <script>
+  /* 1️⃣ 取得或建立 user_id*/
+let userId = localStorage.getItem("user_id");
+
+if (!userId) {
+  userId = prompt("請輸入你的名字或暱稱");
+  
+  /*防呆（避免空值）*/
+  if (!userId || userId.trim() === "") {
+    userId = "guest_" + Math.random().toString(36).substring(2, 8);
+  }
+
+  localStorage.setItem("user_id", userId);
+}
+
+console.log("目前使用者：", userId);
 
 /* 輪播 */
 const images = [
@@ -247,6 +262,7 @@ async function sendMessage() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
+        user_id: userId,
         message: text
       })
     });
